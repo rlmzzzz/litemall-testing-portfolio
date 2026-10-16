@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>litemall 电商系统测试实战 · 作品集</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --text:#1f2329; --muted:#646a73;
+    --line:#e5e6eb; --brand:#2b5aed; --brand-weak:#eef2ff;
+    --ok:#0f9d58; --warn:#e8a33d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.7; padding:0 20px 64px;
+  }
+  .wrap{max-width:920px;margin:0 auto}
+  header{padding:56px 0 32px;border-bottom:1px solid var(--line)}
+  h1{font-size:30px;font-weight:700;letter-spacing:-.4px}
+  .sub{color:var(--muted);margin-top:10px;font-size:15px}
+  .tags{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px}
+  .tag{
+    font-size:13px;padding:4px 12px;border-radius:999px;
+    background:var(--brand-weak);color:var(--brand);border:1px solid #dbe3ff;
+  }
+  h2{font-size:19px;margin:44px 0 16px;font-weight:600}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:24px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .stat .n{font-size:26px;font-weight:700;color:var(--brand);line-height:1.2}
+  .stat .n small{font-size:13px;font-weight:500;color:var(--muted);margin-left:3px}
+  .stat .l{font-size:13px;color:var(--muted);margin-top:6px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px 24px}
+  .card + .card{margin-top:14px}
+  .card h3{font-size:16px;font-weight:600;margin-bottom:8px}
+  .card p{font-size:14px;color:var(--muted)}
+  .badge{
+    display:inline-block;font-size:12px;padding:2px 9px;border-radius:6px;
+    background:#fdecec;color:#c9302c;border:1px solid #f9d7d5;margin-left:8px;vertical-align:1px;
+  }
+  .badge.g{background:#e8f6ee;color:var(--ok);border-color:#cdeadb}
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card);
+        border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line)}
+  th{background:#fafbfc;font-weight:600;font-size:13px;color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  td.num{font-variant-numeric:tabular-nums;font-weight:600;color:var(--brand)}
+  .links{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  a.report{
+    display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;text-decoration:none;color:inherit;transition:.15s;
+  }
+  a.report:hover{border-color:var(--brand);box-shadow:0 4px 16px rgba(43,90,237,.10);transform:translateY(-1px)}
+  a.report .t{font-size:15px;font-weight:600;color:var(--brand)}
+  a.report .d{font-size:13px;color:var(--muted);margin-top:4px}
+  code{background:#f2f3f5;padding:2px 6px;border-radius:5px;font-size:13px;
+       font-family:Consolas,Monaco,monospace}
+  footer{margin-top:56px;padding-top:24px;border-top:1px solid var(--line);
+         font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>litemall 开源电商系统 · 测试实战</h1>
+    <p class="sub">
+      对一个真实开源电商系统（Spring Boot + Vue 前后端分离）完成从测试计划、用例设计，
+      到接口测试、权限专项、性能测试与自动化测试的完整实践。下方所有报告均为真实执行产物。
+    </p>
+    <div class="tags">
+      <span class="tag">功能测试</span>
+      <span class="tag">接口测试 · Postman / Newman</span>
+      <span class="tag">抓包改包 · Fiddler</span>
+      <span class="tag">性能测试 · JMeter</span>
+      <span class="tag">UI 自动化 · Selenium</span>
+      <span class="tag">接口自动化 · requests + pytest</span>
+      <span class="tag">缺陷管理 · 禅道</span>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><div class="n">8 <small>个</small></div><div class="l">在测功能模块</div></div>
+    <div class="stat"><div class="n">80 <small>条</small></div><div class="l">设计并执行的测试用例</div></div>
+    <div class="stat"><div class="n">241 <small>条</small></div><div class="l">接口自动化断言（57 请求）</div></div>
+    <div class="stat"><div class="n">4 <small>个</small></div><div class="l">提交并跟踪的缺陷单（含 1 个严重级）</div></div>
+  </div>
+
+  <h2>关键测试结果</h2>
+
+  <div class="card">
+    <h3>越权缺陷（严重级）<span class="badge">已提交禅道</span></h3>
+    <p>通过「16 个接口 × 3 个角色」的权限矩阵实测，发现统计面板接口未做权限校验，
+       任意低权限角色均可越权读取全站经营数据。</p>
+  </div>
+
+  <div class="card">
+    <h3>分页参数边界缺陷<span class="badge">已提交禅道</span></h3>
+    <p>使用 Fiddler 在真实请求上改包验证：<code>limit=0</code> 时服务端未做边界校验，
+       一次返回全量 <strong>250 条 / 1.5 MB</strong> 数据。</p>
+  </div>
+
+  <div class="card">
+    <h3>A/B 对照压测，量化缺陷影响</h3>
+    <p>针对上述缺陷做 A/B 对照压测（同一脚本、同一压力量，只改分页参数），
+       证明该缺陷使接口吞吐<strong>下降约 56%</strong>（195.6 → 85.3 TPS），
+       平均响应时间从 97 ms 劣化到 221 ms，用数据说明「一个参数校验缺失」的实际业务影响。</p>
+  </div>
+
+  <h2>性能基线（JMeter 梯度加压）</h2>
+  <table>
+    <thead>
+      <tr><th>并发数</th><th>吞吐量 (TPS)</th><th>平均响应时间</th><th>90% 响应时间</th><th>错误率</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>20</td><td class="num">242.6</td><td>78 ms</td><td>164 ms</td><td class="num">0%</td></tr>
+      <tr><td>50</td><td class="num">234.6</td><td>191 ms</td><td>315 ms</td><td class="num">0%</td></tr>
+      <tr><td>100</td><td class="num">219.3</td><td>412 ms</td><td>545 ms</td><td class="num">0%</td></tr>
+    </tbody>
+  </table>
+
+  <h2>在线查看测试报告</h2>
+  <div class="links">
+    <a class="report" href="performance-testing/reports/steady_100/index.html">
+      <div class="t">JMeter 性能报告 · 100 并发稳态</div>
+      <div class="d">TPS / 响应时间 / 吞吐量可视化看板</div>
+    </a>
+    <a class="report" href="performance-testing/reports/limit_0/index.html">
+      <div class="t">JMeter 报告 · limit=0（缺陷态）</div>
+      <div class="d">A/B 对照实验的异常组</div>
+    </a>
+    <a class="report" href="performance-testing/reports/limit_20/index.html">
+      <div class="t">JMeter 报告 · limit=20（正常态）</div>
+      <div class="d">A/B 对照实验的基准组</div>
+    </a>
+    <a class="report" href="api-testing/reports/01-鉴权与登录异常报告.html">
+      <div class="t">Newman 接口报告 · 鉴权与登录异常</div>
+      <div class="d">未登录 / 错误凭证 / 越权访问断言</div>
+    </a>
+    <a class="report" href="api-testing/reports/02-admin123正向业务报告.html">
+      <div class="t">Newman 接口报告 · admin 正向业务</div>
+      <div class="d">管理端主流程接口断言</div>
+    </a>
+    <a class="report" href="api-testing/reports/03-mall123权限验证报告.html">
+      <div class="t">Newman 接口报告 · 权限验证</div>
+      <div class="d">3 个角色的权限矩阵实测</div>
+    </a>
+    <a class="report" href="api-testing/reports/04-promotion123权限验证报告.html">
+      <div class="t">Newman 接口报告 · 促销角色权限</div>
+      <div class="d">低权限角色的越权验证</div>
+    </a>
+    <a class="report" href="api-testing/reports/05-前台wx接口报告.html">
+      <div class="t">Newman 接口报告 · 前台接口</div>
+      <div class="d">用户端商城接口断言</div>
+    </a>
+    <a class="report" href="ui-automation/reports/回归测试报告.html">
+      <div class="t">Selenium 回归测试报告</div>
+      <div class="d">side-runner 批量回放结果</div>
+    </a>
+    <a class="report" href="api-automation-python/接口自动化/reports/接口自动化报告.html">
+      <div class="t">pytest 接口自动化报告</div>
+      <div class="d">针对 litemall 的接口用例执行结果</div>
+    </a>
+    <a class="report" href="api-automation-python/api-test-practice/reports/api-test-report.html">
+      <div class="t">Mock 项目 · pytest 报告</div>
+      <div class="d">自建 Mock 服务 + 数据驱动框架</div>
+    </a>
+  </div>
+
+  <h2>文档与用例</h2>
+  <div class="card">
+    <h3>文档目录</h3>
+    <p>
+      测试计划、测试环境说明、需求依据与实测基线、数据库查询手册，见仓库 <code>docs/</code> 目录；<br>
+      测试用例集（Excel）、缺陷清单见 <code>testcases/</code> 与 <code>api-testing/</code> 目录。
+    </p>
+  </div>
+
+  <footer>
+    被测系统 <strong>litemall</strong> 为开源项目（作者 linlinjava），本作品集仅包含个人测试产出物，不含其源码。<br>
+    HTML 报告均为离线产物，下载后可直接在浏览器打开。
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+{
+  "id": "a1b2c3d4-0000-4000-8000-000000000001",
+  "version": "2.0",
+  "name": "工具链自检",
+  "url": "https://example.com",
+  "urls": [
+    "https://example.com"
+  ],
+  "plugins": [],
+  "suites": [
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000002",
+      "name": "自检套件",
+      "persistSession": false,
+      "parallel": false,
+      "timeout": 300,
+      "tests": [
+        "a1b2c3d4-0000-4000-8000-000000000003"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "id": "a1b2c3d4-0000-4000-8000-000000000003",
+      "name": "打开页面并校验标题",
+      "commands": [
+        {
+          "id": "a1b2c3d4-0000-4000-8000-000000000004",
+          "comment": "",
+          "command": "open",
+          "target": "/",
+          "targets": [],
+          "value": ""
+        },
+        {
+          "id": "a1b2c3d4-0000-4000-8000-000000000005",
+          "comment": "断言标题，验证脚本真的看懂了页面内容",
+          "command": "assertTitle",
+          "target": "Example Domain",
+          "targets": [],
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "anchor": {},
+  "aliases": {}
+}

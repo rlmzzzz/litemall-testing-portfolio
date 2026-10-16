@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# IDE
+.idea/
+*.iml
+
+# 测试原始数据（体积大，报告已在 reports/ 中）
+*.jtl
+*.log

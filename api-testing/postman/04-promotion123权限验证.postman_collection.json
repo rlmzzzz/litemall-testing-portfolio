@@ -1,0 +1,498 @@
+{
+  "info": {
+    "_postman_id": "04-promotion123 权限与越权验证",
+    "name": "04-promotion123 权限与越权验证",
+    "description": "登录 promotion123（仅推广模块权限）。4.6-4.8 预期 506；4.9 统计面板预期 506，实际 0 即证明 Bug-7 越权（会 FAIL）。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "4.1 登录 promotion123（推广管理员：仅推广模块权限）",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 登录 promotion123，保存 token 到集合变量",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "var j = pm.response.json();",
+              "pm.test('登录成功 errno=0', function () { pm.expect(j.errno).to.eql(0); });",
+              "pm.test('返回 token 不为空', function () { pm.expect(j.data.token).to.be.a('string').and.not.empty; });",
+              "pm.collectionVariables.set('token', j.data.token);",
+              "console.log('token = ' + j.data.token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\": \"promotion123\", \"password\": \"promotion123\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "4.2 [正向] 广告列表-有权限",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 4.2 [正向] 广告列表-有权限｜角色内权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（角色内权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/ad/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "ad",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4.3 [正向] 优惠券列表-有权限",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 4.3 [正向] 优惠券列表-有权限｜角色内权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（角色内权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/coupon/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "coupon",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4.4 [正向] 团购列表-有权限",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 4.4 [正向] 团购列表-有权限｜角色内权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（角色内权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/groupon/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "groupon",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4.5 [正向] 专题列表-有权限",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 4.5 [正向] 专题列表-有权限｜角色内权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（角色内权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/topic/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "topic",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4.6 [越权] 商品列表-应拒绝",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 4.6 [越权] 商品列表-应拒绝｜无此权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 506（无此权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(506);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4.7 [越权] 订单列表-应拒绝",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 4.7 [越权] 订单列表-应拒绝｜无此权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 506（无此权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(506);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/order/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "order",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4.8 [越权] 会员列表-应拒绝",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 4.8 [越权] 会员列表-应拒绝｜无此权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 506（无此权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(506);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/user/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "user",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4.9 [缺陷 Bug-7] 统计面板-越权成功",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 4.9 [缺陷 Bug-7] 统计面板-越权成功｜Bug-7：AdminDashbordController 未加 @RequiresPermissions，低权限角色可越权访问",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 506（Bug-7：AdminDashbordController 未加 @RequiresPermissions，低权限角色可越权访问）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(506);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/dashboard",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "dashboard"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

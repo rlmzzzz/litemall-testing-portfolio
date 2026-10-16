@@ -1,0 +1,83 @@
+{
+  "id": "a1f0c100-0001-4000-8000-000000000001",
+  "version": "2.0",
+  "name": "litemall-核心回归",
+  "url": "http://localhost:9527",
+  "tests": [{
+    "id": "a1f0c100-0002-4000-8000-000000000001",
+    "name": "01-登录后台",
+    "commands": [{
+      "id": "a1f0c100-1001-4000-8000-000000000001",
+      "comment": "打开后台登录页",
+      "command": "open",
+      "target": "/",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a1f0c100-1002-4000-8000-000000000001",
+      "comment": "固定窗口大小，避免元素被挤到视口外点不到",
+      "command": "setWindowSize",
+      "target": "1280x800",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "a1f0c100-1003-4000-8000-000000000001",
+      "comment": "等登录框渲染出来再操作（Vue 页面不加等待会偶发点空）",
+      "command": "waitForElementVisible",
+      "target": "name=username",
+      "targets": [["name=username", "name"]],
+      "value": "10000"
+    }, {
+      "id": "a1f0c100-1004-4000-8000-000000000001",
+      "comment": "",
+      "command": "type",
+      "target": "name=username",
+      "targets": [["name=username", "name"], ["xpath=//input[@name='username']", "xpath:attributes"]],
+      "value": "admin123"
+    }, {
+      "id": "a1f0c100-1005-4000-8000-000000000001",
+      "comment": "",
+      "command": "type",
+      "target": "name=password",
+      "targets": [["name=password", "name"], ["xpath=//input[@name='password']", "xpath:attributes"]],
+      "value": "admin123"
+    }, {
+      "id": "a1f0c100-1006-4000-8000-000000000001",
+      "comment": "点登录",
+      "command": "click",
+      "target": "xpath=//button[contains(.,'\u767b\u5f55')]",
+      "targets": [
+        ["xpath=//button[contains(.,'\u767b\u5f55')]", "xpath:innerText"],
+        ["css=.el-button", "css:finder"]
+      ],
+      "value": ""
+    }, {
+      "id": "a1f0c100-1007-4000-8000-000000000001",
+      "comment": "断言点1：等侧边栏出现 = 真的进到后台首页了（登录页没有侧边栏）",
+      "command": "waitForElementVisible",
+      "target": "css=.sidebar-container",
+      "targets": [
+        ["css=.sidebar-container", "css:finder"],
+        ["xpath=//div[contains(@class,'sidebar-container')]", "xpath:attributes"]
+      ],
+      "value": "15000"
+    }, {
+      "id": "a1f0c100-1008-4000-8000-000000000001",
+      "comment": "断言点2：标题正确",
+      "command": "assertTitle",
+      "target": "litemall",
+      "targets": [],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "a1f0c100-9001-4000-8000-000000000001",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": ["a1f0c100-0002-4000-8000-000000000001"]
+  }],
+  "urls": ["http://localhost:9527/"],
+  "plugins": []
+}

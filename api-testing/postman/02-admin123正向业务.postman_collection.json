@@ -1,0 +1,1300 @@
+{
+  "info": {
+    "_postman_id": "02-admin123 超级管理员正向业务",
+    "name": "02-admin123 超级管理员正向业务",
+    "description": "先登录 admin123，再用其 token 访问全部后台接口。预期全部 errno=0。含 2 个缺陷验证项（会 FAIL，属预期内的已提缺陷）。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "2.1 登录 admin123（超级管理员）",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 登录 admin123，保存 token 到集合变量",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "var j = pm.response.json();",
+              "pm.test('登录成功 errno=0', function () { pm.expect(j.errno).to.eql(0); });",
+              "pm.test('返回 token 不为空', function () { pm.expect(j.data.token).to.be.a('string').and.not.empty; });",
+              "pm.collectionVariables.set('token', j.data.token);",
+              "console.log('token = ' + j.data.token);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\": \"admin123\", \"password\": \"admin123\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "2.2 商品列表-分页查询",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.2 商品列表-分页查询｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});",
+              "pm.test('返回 list 数组且不为空', function () { pm.expect(j.data.list).to.be.an('array'); pm.expect(j.data.list.length).to.be.above(0); });",
+              "pm.test('分页生效：条数不超过 limit=5', function () { pm.expect(j.data.list.length).to.be.at.most(5); });",
+              "pm.test('total 字段存在', function () { pm.expect(j.data).to.have.property('total'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.3 商品列表-按名称中文搜索",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.3 商品列表-按名称中文搜索｜中文搜索",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（中文搜索）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});",
+              "pm.test('搜索结果每条名称含 手机', function () { j.data.list.forEach(function(g){ pm.expect(g.name).to.include('手机'); }); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/list?page=1&limit=5&name=%E6%89%8B%E6%9C%BA",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            },
+            {
+              "key": "name",
+              "value": "%E6%89%8B%E6%9C%BA"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.4 商品详情-存在的商品(id=1181009)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.4 商品详情-存在的商品(id=1181009)｜详情正常",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（详情正常）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});",
+              "pm.test('返回商品 id 正确', function () { pm.expect(j.data.goods.id).to.eql(1181009); });",
+              "pm.test('返回商品名称不为空', function () { pm.expect(j.data.goods.name).to.be.a('string').and.not.empty; });",
+              "pm.test('返回结构含 goods/specifications/products', function () { pm.expect(j.data).to.have.property('goods'); pm.expect(j.data).to.have.property('specifications'); pm.expect(j.data).to.have.property('products'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/detail?id=1181009",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "detail"
+          ],
+          "query": [
+            {
+              "key": "id",
+              "value": "1181009"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.4b [缺陷 Bug-5] 商品专柜价为负数未被拦截",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.4b [缺陷 Bug-5] 商品专柜价为负数未被拦截｜Bug-5：id=1181009 商品 counterPrice=-1.00，新增时后端未校验专柜价非负",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('[缺陷验证] 专柜价 counterPrice 不应为负数', function () {",
+              "    var cp = j.data.goods.counterPrice;",
+              "    pm.expect(cp, '实际专柜价=' + cp + '，后端未校验非负，Bug-5 复现').to.be.at.least(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/detail?id=1181009",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "detail"
+          ],
+          "query": [
+            {
+              "key": "id",
+              "value": "1181009"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.5 [缺陷] 商品详情-不存在的ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.5 [缺陷] 商品详情-不存在的ID｜不存在的ID应返回业务提示(4xx)，实际返回502服务端错误码",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 502（不存在的ID应返回业务提示(4xx)，实际返回502服务端错误码）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(502);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/detail?id=99999999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "detail"
+          ],
+          "query": [
+            {
+              "key": "id",
+              "value": "99999999"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.6 商品详情-缺少id参数",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.6 商品详情-缺少id参数｜缺少必填参数",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 402（缺少必填参数）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(402);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/detail",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "detail"
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.7 商品详情-id为字符串",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.7 商品详情-id为字符串｜参数类型非法",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 402（参数类型非法）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(402);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/detail?id=abc",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "detail"
+          ],
+          "query": [
+            {
+              "key": "id",
+              "value": "abc"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.8 商品列表-page=abc",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.8 商品列表-page=abc｜参数类型非法",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 402（参数类型非法）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(402);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/list?page=abc&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "abc"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.9 [缺陷] 商品列表-limit=0",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.9 [缺陷] 商品列表-limit=0｜limit=0 应返回0条或提示参数非法，实际返回全量数据",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('[缺陷验证] limit=0 时不应返回全量数据', function () {",
+              "    pm.expect(j.data.list.length, '实际返回 ' + j.data.list.length + ' 条，分页失效').to.be.at.most(1);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/list?page=1&limit=0",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.10 商品列表-page越界(9999)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.10 商品列表-page越界(9999)｜越界页应正常处理",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（越界页应正常处理）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});",
+              "pm.test('越界页仍返回合法结构', function () { pm.expect(j.data.list).to.be.an('array'); });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/goods/list?page=9999&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "goods",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "9999"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.11 品牌列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.11 品牌列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/brand/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "brand",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.12 类目列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.12 类目列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/category/list",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "category",
+            "list"
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.13 订单列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.13 订单列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/order/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "order",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.14 会员列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.14 会员列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/user/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "user",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.15 售后列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.15 售后列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/aftersale/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "aftersale",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.16 评价列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.16 评价列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/comment/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "comment",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.17 广告列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.17 广告列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/ad/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "ad",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.18 优惠券列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.18 优惠券列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/coupon/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "coupon",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.19 团购列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.19 团购列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/groupon/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "groupon",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.20 专题列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.20 专题列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/topic/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "topic",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.21 统计面板",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.21 统计面板｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/dashboard",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "dashboard"
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.22 管理员列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.22 管理员列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/admin/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "admin",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "2.23 角色列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 2.23 角色列表｜有权限",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（有权限）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Litemall-Admin-Token",
+            "value": "{{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/role/list?page=1&limit=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "admin",
+            "role",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

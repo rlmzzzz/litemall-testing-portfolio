@@ -1,0 +1,160 @@
+{
+  "info": {
+    "_postman_id": "05-前台 wx 接口（无需鉴权）",
+    "name": "05-前台 wx 接口（无需鉴权）",
+    "description": "前台商城接口不需要登录，验证首页/分类/商品列表可用性。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "5.1 前台-商城首页",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 5.1 前台-商城首页",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（前台接口无需登录）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});",
+              "pm.test('返回 data 不为空', function () { pm.expect(j.data).to.not.be.empty; });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/wx/home/index",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "wx",
+            "home",
+            "index"
+          ]
+        }
+      }
+    },
+    {
+      "name": "5.2 前台-分类目录",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 5.2 前台-分类目录",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（前台接口无需登录）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});",
+              "pm.test('返回 data 不为空', function () { pm.expect(j.data).to.not.be.empty; });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/wx/catalog/index",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "wx",
+            "catalog",
+            "index"
+          ]
+        }
+      }
+    },
+    {
+      "name": "5.3 前台-商品列表",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// 5.3 前台-商品列表",
+              "pm.test('HTTP 状态码为 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('响应为合法 JSON', function () { pm.response.to.be.json; });",
+              "var j = pm.response.json();",
+              "pm.test('响应含 errno 字段', function () { pm.expect(j).to.have.property('errno'); });",
+              "pm.test('errno 应为 0（前台接口无需登录）', function () {",
+              "    pm.expect(j.errno, '实际 errno=' + j.errno + ' errmsg=' + j.errmsg).to.eql(0);",
+              "});",
+              "pm.test('返回 data 不为空', function () { pm.expect(j.data).to.not.be.empty; });"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/wx/goods/list?categoryId=1008009&page=1&size=5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "wx",
+            "goods",
+            "list"
+          ],
+          "query": [
+            {
+              "key": "categoryId",
+              "value": "1008009"
+            },
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "size",
+              "value": "5"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}

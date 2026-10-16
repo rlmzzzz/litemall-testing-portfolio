@@ -1,0 +1,72 @@
+[
+  {
+    "name": "商品列表-正常返回200且含data字段",
+    "method": "GET",
+    "path": "/api/products",
+    "expected_status": 200,
+    "expect_field": "data"
+  },
+  {
+    "name": "查询存在的商品-返回200且含id",
+    "method": "GET",
+    "path": "/api/products/1",
+    "expected_status": 200,
+    "expect_field": "data.id"
+  },
+  {
+    "name": "查询不存在的商品-返回404",
+    "method": "GET",
+    "path": "/api/products/999",
+    "expected_status": 404
+  },
+  {
+    "name": "创建商品-返回201且回传id",
+    "method": "POST",
+    "path": "/api/products",
+    "body": {"name": "测试商品", "price": 50},
+    "expected_status": 201,
+    "expect_field": "data.id"
+  },
+  {
+    "name": "删除商品-返回200",
+    "method": "DELETE",
+    "path": "/api/products/1",
+    "expected_status": 200
+  },
+  {
+    "name": "未带token访问admin接口-返回401",
+    "method": "GET",
+    "path": "/api/admin/users",
+    "expected_status": 401
+  },
+  {
+    "name": "带正确token访问admin接口-返回200",
+    "method": "GET",
+    "path": "/api/admin/users",
+    "token": "secret-token",
+    "expected_status": 200,
+    "expect_field": "data"
+  },
+  {
+    "name": "登录正确账号-返回token",
+    "method": "POST",
+    "path": "/api/login",
+    "body": {"username": "admin", "password": "admin123"},
+    "expected_status": 200,
+    "expect_field": "data.token"
+  },
+  {
+    "name": "登录错误密码-返回401",
+    "method": "POST",
+    "path": "/api/login",
+    "body": {"username": "admin", "password": "wrong"},
+    "expected_status": 401
+  },
+  {
+    "name": "响应时间应在1秒内",
+    "method": "GET",
+    "path": "/api/products",
+    "expected_status": 200,
+    "max_ms": 1000
+  }
+]
